@@ -17,15 +17,34 @@ SourceMapConsumer.with(sourceMapData, null, async consumer => {
 
   // iterate through each original source file
   for (let i = 0, l = consumer.sources.length; i < l; i++) {
-    const sourcePath = consumer.sources[i];
-
+    var sourcePath = consumer.sources[i];
+	var isFlagged = false; // Flag file for weird path name
+	
+	
     if (sourcePath.includes('://')) {
-      console.error(`skipping ${sourcePath}`);
-      continue;
+		isFlagged = true;
+      //console.error(`skipping ${sourcePath}`);
+      //sourcePath = sourcePath.replace("://", "/");
+	  //continue;
     }
 
     // parse the source path and generate output path
-    const { dir, base } = path.parse(sourcePath);
+    const { dir, base } = path.parse(sourcePath.replace("://", "/")); // nvm about the flag but it'll just ignore it if it doesnt exist so works ig
+	
+	// basically it tries to create a path with "://" in the path name so this is just a hack to fix it
+	
+	
+	/*
+	* i guess if you wanted to use the flag you could do this 
+	* if (isFlagged){
+		const { dir, base } = path.parse(sourcePath.replace("://", "/"));
+	} else {
+		const { dir, base } = path.parse(sourcePath));
+	}
+	* but isn't that a bit excessive? idk 
+	*/
+	
+	
     const sourceOutputDir = path.join(outputDir, dir);
     const sourceOutputPath = path.join(sourceOutputDir, base);
     
